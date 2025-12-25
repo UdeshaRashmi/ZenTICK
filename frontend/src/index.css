@@ -1,1 +1,54 @@
- @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	/* Zen palette */
+	--zen-bg-1: #f3fbf8; /* very light mint */
+	--zen-bg-2: #e6f7f2; /* soft aqua */
+	--zen-ink: #0f1720; /* deep slate */
+	--zen-muted: #475569; /* muted slate */
+	--zen-accent: #2f855a; /* calm green */
+}
+
+/* Global base styles for a calm, airy UI */
+html, body, #root {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	color: var(--zen-ink);
+	background: radial-gradient(1200px 600px at 10% 10%, rgba(47,133,90,0.06), transparent 10%),
+							radial-gradient(1000px 400px at 90% 90%, rgba(96,165,250,0.03), transparent 12%),
+							linear-gradient(180deg, var(--zen-bg-1), var(--zen-bg-2));
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* container wrapper used throughout the app */
+.zen-container {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 2rem;
+}
+
+/* subtle glass card */
+.zen-card {
+	background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.45));
+	border-radius: 12px;
+	box-shadow: 0 6px 20px rgba(16,24,40,0.06);
+	padding: 1rem;
+}
+
+/* headings */
+h1, h2, h3 {
+	color: var(--zen-ink);
+}
+
+/* links */
+a { color: var(--zen-accent); font-weight: 600; }
+
+/* small helpers */
+.muted { color: var(--zen-muted); }
