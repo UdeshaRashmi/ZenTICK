@@ -1,81 +1,82 @@
+// controllers/alarmController.js
 const Alarm = require('../models/Alarm');
 
+// Helper to accept durationInMinutes in body
+const processDuration = (body) => {
+  if (body.durationInMinutes !== undefined) {
+    body.duration = Number(body.durationInMinutes) * 60;
+    delete body.durationInMinutes; // clean up
+  }
+  return body;
+};
+
+// Get all alarms (returns durationInMinutes)
 exports.getAlarms = async (req, res, next) => {
   try {
-    const alarms = await Alarm.find().sort('time');
-    res.json(alarms);
-  } catch (err) {
-    next(err);
+    const alarms = await Alarm.find().sort({ duration: 1 });
+    res.json({
+      success: true,
+      count: alarms.length,
+      data: alarms
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
+// Create new alarm
 exports.createAlarm = async (req, res, next) => {
   try {
-    const { time, label, active, repeat, rampDuration, maxVolume } = req.body;
-    if (!time) return res.status(400).json({ message: 'time is required' });
-
-    const alarm = new Alarm({
-      time,
-      label: label || '',
-      active: typeof active === 'boolean' ? active : true,
-      repeat: Array.isArray(repeat) ? repeat : [],
-      rampDuration: typeof rampDuration === 'number' ? rampDuration : 30,
-      maxVolume: typeof maxVolume === 'number' ? Math.min(Math.max(maxVolume, 0), 1) : 1.0
+    const processedBody = processDuration(req.body);
+    const alarm = await Alarm.create(processedBody);
+    res.status(201).json({
+      success: true,
+      data: alarm
     });
-
-    await alarm.save();
-    res.status(201).json(alarm);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
-exports.getAlarmById = async (req, res, next) => {
-  try {
-    const alarm = await Alarm.findById(req.params.id);
-    if (!alarm) return res.status(404).json({ message: 'Alarm not found' });
-    res.json(alarm);
-  } catch (err) {
-    next(err);
-  }
-};
-
+// Update alarm
 exports.updateAlarm = async (req, res, next) => {
   try {
-    const updated = await Alarm.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updated) return res.status(404).json({ message: 'Alarm not found' });
-    res.json(updated);
-  } catch (err) {
-    next(err);
+    const processedBody = processDuration(req.body);
+    const alarm = await Alarm.findByIdAndUpdate(
+      req.params.id,
+      processedBody,
+      { new: true, runValidators: true }
+    );
+
+    if (!alarm) {
+      const err = new Error('Alarm not found');
+      err.statusCode = 404;
+      return next(err);
+    }
+
+    res.json({
+      success: true,
+      data: alarm
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
+// Delete unchanged
 exports.deleteAlarm = async (req, res, next) => {
   try {
-    const removed = await Alarm.findByIdAndDelete(req.params.id);
-    if (!removed) return res.status(404).json({ message: 'Alarm not found' });
-    res.json({ message: 'Alarm deleted' });
-  } catch (err) {
-    next(err);
-  }
-};
-
-// Trigger endpoint: mark lastTriggered and return alarm payload — frontend can call this to test/play
-exports.triggerAlarm = async (req, res, next) => {
-  try {
-    const alarm = await Alarm.findById(req.params.id);
-    if (!alarm) return res.status(404).json({ message: 'Alarm not found' });
-    alarm.lastTriggered = new Date();
-    await alarm.save();
-    // Return alarm settings so frontend can perform smooth ramping
+    const alarm = await Alarm.findByIdAndDelete(req.params.id);
+    if (!alarm) {
+      const err = new Error('Alarm not found');
+      err.statusCode = 404;
+      return next(err);
+    }
     res.json({
-      id: alarm._id,
-      time: alarm.time,
-      label: alarm.label,
-      rampDuration: alarm.rampDuration,
-      maxVolume: alarm.maxVolume
+      success: true,
+      message: 'Alarm deleted successfully'
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };

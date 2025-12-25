@@ -1,12 +1,17 @@
+// routes/alarms.js
 const express = require('express');
-const router = express.Router();
-const controller = require('../controllers/alarmController');
+const {
+  getAlarms,
+  createAlarm,
+  updateAlarm,
+  deleteAlarm
+} = require('../controllers/alarmController');
 
-router.get('/', controller.getAlarms);
-router.post('/', controller.createAlarm);
-router.get('/:id', controller.getAlarmById);
-router.put('/:id', controller.updateAlarm);
-router.delete('/:id', controller.deleteAlarm);
-router.post('/:id/trigger', controller.triggerAlarm);
+const router = express.Router();
+
+router.get('/', getAlarms);
+router.post('/', createAlarm);
+router.put('/:id', updateAlarm);
+router.delete('/:id', deleteAlarm);
 
 module.exports = router;
