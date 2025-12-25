@@ -8,12 +8,12 @@ import './App.css'
 function App(){
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path='/' element={<Home/>} />
-          <Route path='/stopwatch' element={<Stopwatch/>} />
-        </Routes>
-      </Layout>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="stopwatch" element={<Stopwatch />} />
+        </Route>
+      </Routes>
     </BrowserRouter>
   )
 }
