@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const todosRouter = require('./routes/todos');
+const alarmsRouter = require('./routes/alarms');
 const { errorHandler } = require('./utils/errorHandler');
 
 const app = express();
@@ -11,10 +12,11 @@ app.use(express.json());
 
 // Register API routers
 app.use('/api/todos', todosRouter);
+app.use('/api/alarms', alarmsRouter);
 
 // Simple health endpoint
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', routes: ['/api/todos'] });
+  res.json({ status: 'ok', routes: ['/api/todos', '/api/alarms'] });
 });
 
 // Endpoint to list routes for Postman / discovery
