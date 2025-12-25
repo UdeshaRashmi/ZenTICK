@@ -14,7 +14,7 @@ export default function Home() {
     <div>
       <h2>Todos</h2>
       <TodoForm onCreate={createTodo} />
-      {loading ? <div>Loading...</div> : <TodoList todos={todos} onToggle={toggle} onDelete={deleteTodo} />}
+      {loading ? <div>Loading...</div> : <TodoList todos={todos} onToggle={toggle} onDelete={deleteTodo} onUpdate={updateTodo} />}
     </div>
   );
 }
