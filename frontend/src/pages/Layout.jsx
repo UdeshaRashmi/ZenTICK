@@ -1,11 +1,15 @@
  // src/pages/Layout.jsx
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
+import Mountains from '../components/common/Mountains';
+import BackgroundLeaves from '../components/common/BackgroundLeaves';
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-teal-50">
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-purple-100">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-teal-50 relative overflow-hidden">
+      <Mountains />
+      <BackgroundLeaves />
+      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-purple-100 relative z-10">
         <div className="max-w-5xl mx-auto px-6 py-8 flex justify-between items-center">
           <h1 className="text-4xl font-light text-gray-800 tracking-wide">
             ZenTick <span className="text-purple-500">🧘‍♂️</span>
@@ -40,7 +44,7 @@ export default function Layout() {
       </main>
 
       <footer className="text-center text-gray-500 text-sm py-8">
-        Breathe. Flow. Tick. 🕉️
+        Breathe. Flow. Tick. 
       </footer>
     </div>
   );

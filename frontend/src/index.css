@@ -52,3 +52,33 @@ a { color: var(--zen-accent); font-weight: 600; }
 
 /* small helpers */
 .muted { color: var(--zen-muted); }
+/* Mountains and leaves backgrounds */
+.mountains { bottom: 0; left: 0; right: 0; }
+
+.floating-leaf {
+	position: absolute;
+	bottom: -120px;
+	width: 36px;
+	height: 36px;
+	opacity: 0.95;
+	will-change: transform, opacity;
+	filter: drop-shadow(0 6px 8px rgba(15,23,32,0.08));
+	animation-name: floatUp, sway;
+	animation-timing-function: linear, ease-in-out;
+	animation-iteration-count: infinite, infinite;
+	animation-delay: 0s, 0s;
+}
+
+@keyframes floatUp {
+	0% { transform: translateY(0) rotate(0deg); opacity: 0.0; }
+	10% { opacity: 0.6; }
+	50% { opacity: 0.95; }
+	100% { transform: translateY(-140vh) rotate(360deg); opacity: 0.0; }
+}
+
+@keyframes sway {
+	0% { transform: translateX(0) rotate(0deg); }
+	50% { transform: translateX(18px) rotate(12deg); }
+	100% { transform: translateX(0) rotate(0deg); }
+}
+
