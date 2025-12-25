@@ -2,10 +2,11 @@ import React from 'react';
 import Button from '../common/Button';
 
 export default function AlarmPresetList({ presets = [], onTrigger, onDelete }) {
-  if (!presets || presets.length === 0) return <div>No presets</div>;
+  const list = Array.isArray(presets) ? presets : (presets && presets.data ? presets.data : []);
+  if (!list || list.length === 0) return <div>No presets</div>;
   return (
     <ul>
-      {presets.map((p) => (
+      {list.map((p) => (
         <li key={p._id || p.name} style={{ marginBottom: 8 }}>
           <strong>{p.name || p.label}</strong> — {p.durationInMinutes || Math.round((p.duration||0)/60)} min
           <div>

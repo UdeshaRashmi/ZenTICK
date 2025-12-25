@@ -14,17 +14,19 @@ export default function AlarmPresetForm({ onCreate }) {
   };
 
   return (
-    <form onSubmit={submit} style={{ marginBottom: 12 }}>
+    <form onSubmit={submit} className="space-y-3 mb-3">
       <Input value={name} onChange={setName} placeholder="Preset name" />
-      <Input value={minutes} onChange={setMinutes} type="number" min={10} max={120} />
-      <select value={sound} onChange={(e) => setSound(e.target.value)}>
-        <option value="bell">bell</option>
-        <option value="chime">chime</option>
-        <option value="gong">gong</option>
-        <option value="soft">soft</option>
-        <option value="nature">nature</option>
-      </select>
-      <div style={{ marginTop: 8 }}>
+      <div className="flex gap-2">
+        <Input value={minutes} onChange={setMinutes} type="number" min={10} max={120} className="w-32" />
+        <select value={sound} onChange={(e) => setSound(e.target.value)} className="px-3 py-2 border rounded-md">
+          <option value="bell">bell</option>
+          <option value="chime">chime</option>
+          <option value="gong">gong</option>
+          <option value="soft">soft</option>
+          <option value="nature">nature</option>
+        </select>
+      </div>
+      <div>
         <Button type="submit">Add Preset</Button>
       </div>
     </form>

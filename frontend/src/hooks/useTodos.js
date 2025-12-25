@@ -8,7 +8,8 @@ export default function useTodos() {
   const fetchTodos = async () => {
     setLoading(true);
     const res = await api.get('/todos');
-    setTodos(res.data);
+    const payload = res.data && res.data.data ? res.data.data : res.data;
+    setTodos(Array.isArray(payload) ? payload : []);
     setLoading(false);
   };
 
@@ -18,14 +19,16 @@ export default function useTodos() {
 
   const createTodo = async (payload) => {
     const res = await api.post('/todos', payload);
-    setTodos((s) => [res.data, ...s]);
-    return res.data;
+    const item = res.data && res.data.data ? res.data.data : res.data;
+    setTodos((s) => [item, ...s]);
+    return item;
   };
 
   const updateTodo = async (id, payload) => {
     const res = await api.put(`/todos/${id}`, payload);
-    setTodos((s) => s.map((t) => (t._id === id ? res.data : t)));
-    return res.data;
+    const item = res.data && res.data.data ? res.data.data : res.data;
+    setTodos((s) => s.map((t) => (t._id === id ? item : t)));
+    return item;
   };
 
   const deleteTodo = async (id) => {
