@@ -28,15 +28,18 @@ const alarmSchema = new mongoose.Schema({
 
 // Virtual: duration in minutes (for API response)
 alarmSchema.virtual('durationInMinutes').get(function () {
+  if (!this || typeof this.duration !== 'number') return undefined;
   return Math.round(this.duration / 60);
 });
 
 // When creating/updating, convert minutes → seconds if provided
-alarmSchema.pre('save', function (next) {
-  if (this.isModified('durationInMinutes') || this.durationInMinutes !== undefined) {
-    this.duration = this.durationInMinutes * 60;
+alarmSchema.pre('save', function () {
+  if (!this || typeof this !== 'object') return;
+
+  // If the API provided durationInMinutes (virtual), convert to seconds.
+  if (this.durationInMinutes !== undefined && !isNaN(Number(this.durationInMinutes))) {
+    this.duration = Math.round(Number(this.durationInMinutes) * 60);
   }
-  next();
 });
 
 alarmSchema.set('toJSON', { virtuals: true });

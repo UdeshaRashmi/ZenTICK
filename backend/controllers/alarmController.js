@@ -1,47 +1,58 @@
 // controllers/alarmController.js
 const Alarm = require('../models/Alarm');
 
-// Helper to accept durationInMinutes in body
+// Helper: Convert durationInMinutes → duration (seconds)
 const processDuration = (body) => {
+  body = body || {};
   if (body.durationInMinutes !== undefined) {
-    body.duration = Number(body.durationInMinutes) * 60;
-    delete body.durationInMinutes; // clean up
+    const minutes = Number(body.durationInMinutes);
+    if (isNaN(minutes)) {
+      throw new Error('durationInMinutes must be a valid number');
+    }
+    if (minutes < 10 || minutes > 120) {
+      throw new Error('durationInMinutes must be between 10 and 120');
+    }
+    body.duration = Math.round(minutes * 60);
+    delete body.durationInMinutes;
   }
   return body;
 };
 
-// Get all alarms (returns durationInMinutes)
+// GET /api/alarms
 exports.getAlarms = async (req, res, next) => {
   try {
     const alarms = await Alarm.find().sort({ duration: 1 });
-    res.json({
+    return res.json({  // ← Use return to prevent double response
       success: true,
       count: alarms.length,
       data: alarms
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
-// Create new alarm
+// POST /api/alarms
 exports.createAlarm = async (req, res, next) => {
   try {
     const processedBody = processDuration(req.body);
+
     const alarm = await Alarm.create(processedBody);
-    res.status(201).json({
+
+    return res.status(201).json({
       success: true,
       data: alarm
     });
   } catch (error) {
-    next(error);
+    return next(error);  // ← This is safe now
   }
 };
 
-// Update alarm
+// PUT /api/alarms/:id
 exports.updateAlarm = async (req, res, next) => {
   try {
     const processedBody = processDuration(req.body);
+
     const alarm = await Alarm.findByIdAndUpdate(
       req.params.id,
       processedBody,
@@ -49,34 +60,38 @@ exports.updateAlarm = async (req, res, next) => {
     );
 
     if (!alarm) {
-      const err = new Error('Alarm not found');
-      err.statusCode = 404;
-      return next(err);
+      return res.status(404).json({
+        success: false,
+        message: 'Alarm not found'
+      });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: alarm
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
-// Delete unchanged
+// DELETE /api/alarms/:id
 exports.deleteAlarm = async (req, res, next) => {
   try {
     const alarm = await Alarm.findByIdAndDelete(req.params.id);
+
     if (!alarm) {
-      const err = new Error('Alarm not found');
-      err.statusCode = 404;
-      return next(err);
+      return res.status(404).json({
+        success: false,
+        message: 'Alarm not found'
+      });
     }
-    res.json({
+
+    return res.json({
       success: true,
       message: 'Alarm deleted successfully'
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };

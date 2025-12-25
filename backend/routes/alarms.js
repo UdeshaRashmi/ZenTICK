@@ -10,7 +10,7 @@ const {
 const router = express.Router();
 
 router.get('/', getAlarms);
-router.post('/', createAlarm);
+router.post('/', createAlarm);  
 router.put('/:id', updateAlarm);
 router.delete('/:id', deleteAlarm);
 
