@@ -1,7 +1,9 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Home() {
+  const navigate = useNavigate();
+  const [minutes, setMinutes] = useState(25);
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center">
       <div className="max-w-6xl mx-auto w-full px-6 py-24">
@@ -28,17 +30,17 @@ export default function Home() {
                 View Todos
               </Link>
 
-              <Link
-                to="/stopwatch"
+              <button
+                onClick={() => navigate('/stopwatch')}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-indigo-200 text-indigo-700 bg-white hover:bg-indigo-50 transition"
                 aria-label="Open Timer"
               >
                 <span className="material-icons">timer</span>
                 Open Timer
-              </Link>
+              </button>
             </div>
 
-            <div className="mt-6 flex gap-4 text-sm text-gray-500">
+            <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <span className="inline-block w-2 h-2 bg-indigo-600 rounded-full" />
                 <span>Gentle ramping alarms</span>
@@ -47,11 +49,33 @@ export default function Home() {
                 <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full" />
                 <span>Simple focused workflows</span>
               </div>
+              <div className="ml-auto flex items-center gap-3">
+                <div className="text-xs text-gray-500">Session</div>
+                <div className="flex items-center gap-2 bg-white rounded-full px-2 py-1 border border-gray-100">
+                  {[10,15,25,50].map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setMinutes(p)}
+                      className={`text-xs px-2 py-1 rounded-full ${minutes===p ? 'bg-indigo-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                    >{p}m</button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min="1"
+                    value={minutes}
+                    onChange={(e) => setMinutes(Math.max(1, Number(e.target.value || 0)))}
+                    className="w-16 text-sm px-2 py-1 border rounded-md"
+                    aria-label="minutes"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Right: Preview card */}
-          <div className="flex justify-center lg:justify-end">
+            <div className="flex justify-center lg:justify-end">
             <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl ring-1 ring-black/5">
               <div className="flex items-center justify-between mb-4">
                 <div className="text-sm text-gray-500">Session</div>
@@ -69,8 +93,18 @@ export default function Home() {
               </div>
 
               <div className="mt-6 flex gap-3">
-                <button className="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white">Start</button>
-                <button className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700">Preset</button>
+                <button
+                  onClick={() => navigate('/stopwatch', { state: { initial: minutes * 60 } })}
+                  className="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white"
+                >
+                  Start
+                </button>
+                <button
+                  onClick={() => navigate(`/stopwatch?initial=${minutes * 60}`)}
+                  className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700"
+                >
+                  Preset
+                </button>
               </div>
             </div>
           </div>

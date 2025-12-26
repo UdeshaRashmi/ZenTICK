@@ -1,4 +1,5 @@
  import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import StopwatchDisplay from '../components/stopwatch/StopwatchDisplay';
 import AlarmPresetForm from '../components/stopwatch/AlarmPresetForm';
 import AlarmPresetList from '../components/stopwatch/AlarmPresetList';
@@ -33,6 +34,13 @@ export default function StopwatchPage() {
     }
   };
 
+  const location = useLocation();
+  // allow passing an initial seconds value via navigation state or ?initial= query
+  const params = new URLSearchParams(location.search);
+  const initialFromQuery = params.get('initial') ? parseInt(params.get('initial'), 10) : null;
+  const initialFromState = location.state && location.state.initial ? Number(location.state.initial) : null;
+  const initialSeconds = initialFromState || initialFromQuery || 60 * 15;
+
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center py-10 px-4">
       <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-6 space-y-8">
@@ -48,7 +56,7 @@ export default function StopwatchPage() {
         {/* Stopwatch */}
         <div className="flex justify-center">
           <StopwatchDisplay
-            initial={60 * 15}
+            initial={initialSeconds}
             onFinish={() => {
               /* trigger default sound */
             }}
