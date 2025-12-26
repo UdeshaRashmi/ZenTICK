@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+ import React, { useState } from 'react';
 import StopwatchDisplay from '../components/stopwatch/StopwatchDisplay';
 import AlarmPresetForm from '../components/stopwatch/AlarmPresetForm';
 import AlarmPresetList from '../components/stopwatch/AlarmPresetList';
@@ -14,10 +14,15 @@ export default function StopwatchPage() {
   };
 
   const handleTrigger = async (preset) => {
-    // call backend trigger to mark lastTriggered and get settings
     const res = await triggerAlarm(preset._id || preset.id);
     const settings = res && (res.data || res);
-    const controller = playAlarmSmoothly({ sound: preset.sound || 'chime', rampDuration: preset.rampDuration || 30, maxVolume: preset.maxVolume || 1.0 });
+
+    const controller = playAlarmSmoothly({
+      sound: preset.sound || 'chime',
+      rampDuration: preset.rampDuration || 30,
+      maxVolume: preset.maxVolume || 1.0,
+    });
+
     setActiveSoundController(controller);
   };
 
@@ -29,16 +34,76 @@ export default function StopwatchPage() {
   };
 
   return (
-    <div>
-      <h2>Stopwatch</h2>
-      <StopwatchDisplay initial={60 * 15} onFinish={() => { /* trigger default sound */ }} />
+    <div className="min-h-screen bg-gray-100 flex justify-center py-10 px-4">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-6 space-y-8">
 
-      <h3>Presets</h3>
-      <AlarmPresetForm onCreate={handleCreate} />
-      <AlarmPresetList presets={alarms} onTrigger={handleTrigger} onDelete={deleteAlarm} />
+        {/* Header */}
+        <h2 className="flex items-center justify-center gap-2 text-3xl font-bold text-gray-800">
+          <span className="material-icons text-indigo-600 text-4xl">
+            timer
+          </span>
+          Stopwatch
+        </h2>
 
-      <div style={{ marginTop: 12 }}>
-        <button onClick={stopSound}>Stop Sound</button>
+        {/* Stopwatch */}
+        <div className="flex justify-center">
+          <StopwatchDisplay
+            initial={60 * 15}
+            onFinish={() => {
+              /* trigger default sound */
+            }}
+          />
+        </div>
+
+        {/* Presets Section */}
+        <div className="space-y-4">
+          <h3 className="flex items-center gap-2 text-xl font-semibold text-gray-700">
+            <span className="material-icons text-indigo-500">
+              alarm
+            </span>
+            Alarm Presets
+          </h3>
+
+          {/* Create Preset */}
+          <AlarmPresetForm onCreate={handleCreate} />
+
+          {/* Preset List */}
+          {alarms.length === 0 ? (
+            <div className="flex flex-col items-center text-gray-400 py-6">
+              <span className="material-icons text-5xl mb-2">
+                alarm_off
+              </span>
+              No presets added yet
+            </div>
+          ) : (
+            <AlarmPresetList
+              presets={alarms}
+              onTrigger={handleTrigger}
+              onDelete={deleteAlarm}
+            />
+          )}
+        </div>
+
+        {/* Stop Sound Button */}
+        <div className="flex justify-center pt-4">
+          <button
+            onClick={stopSound}
+            disabled={!activeSoundController}
+            className={`flex items-center gap-2 px-5 py-2 rounded-xl text-white font-medium transition
+              ${
+                activeSoundController
+                  ? 'bg-red-500 hover:bg-red-600'
+                  : 'bg-gray-300 cursor-not-allowed'
+              }
+            `}
+          >
+            <span className="material-icons">
+              volume_off
+            </span>
+            Stop Sound
+          </button>
+        </div>
+
       </div>
     </div>
   );
