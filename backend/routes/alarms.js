@@ -13,5 +13,6 @@ router.get('/', getAlarms);
 router.post('/', createAlarm);  
 router.put('/:id', updateAlarm);
 router.delete('/:id', deleteAlarm);
+router.post('/:id/trigger', require('../controllers/alarmController').triggerAlarm);
 
 module.exports = router;

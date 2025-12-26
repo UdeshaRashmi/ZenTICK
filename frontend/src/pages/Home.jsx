@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { playSoundOnce } from '../utils/sounds';
 
 export default function Home() {
   const navigate = useNavigate();
   const [minutes, setMinutes] = useState(25);
+  const [soundUrl, setSoundUrl] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center">
       <div className="max-w-6xl mx-auto w-full px-6 py-24">
@@ -70,6 +74,49 @@ export default function Home() {
                     aria-label="minutes"
                   />
                 </div>
+                <div className="ml-4 flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={soundUrl}
+                    onChange={(e) => setSoundUrl(e.target.value)}
+                    placeholder="Sound URL (optional)"
+                    className="text-sm px-3 py-1 border rounded-md w-56"
+                    aria-label="sound-url"
+                  />
+                  <button
+                    onClick={() => playSoundOnce({ sound: soundUrl || 'bell', volume: 1.0 })}
+                    className="px-3 py-1 rounded-md bg-indigo-600 text-white text-sm"
+                    title="Play sound URL"
+                  >
+                    Test
+                  </button>
+                </div>
+                <div className="ml-4 flex items-center gap-2">
+                  <input type="file" accept="audio/*" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
+                  <button
+                    onClick={async () => {
+                      if (!selectedFile) return alert('Choose a file first');
+                      setUploading(true);
+                      try {
+                        const fd = new FormData();
+                        fd.append('file', selectedFile);
+                        const res = await fetch('/api/sounds/upload', { method: 'POST', body: fd });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.message || 'Upload failed');
+                        setSoundUrl(data.url);
+                        alert('Uploaded: ' + data.filename);
+                      } catch (err) {
+                        console.error('upload failed', err);
+                        alert(err?.message || 'Upload failed');
+                      } finally {
+                        setUploading(false);
+                      }
+                    }}
+                    className="px-3 py-1 rounded-md bg-emerald-600 text-white text-sm"
+                  >
+                    {uploading ? 'Uploading...' : 'Upload'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -94,13 +141,13 @@ export default function Home() {
 
               <div className="mt-6 flex gap-3">
                 <button
-                  onClick={() => navigate('/stopwatch', { state: { initial: minutes * 60 } })}
+                  onClick={() => navigate('/stopwatch', { state: { initial: minutes * 60, sound: soundUrl || 'bell' } })}
                   className="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white"
                 >
                   Start
                 </button>
                 <button
-                  onClick={() => navigate(`/stopwatch?initial=${minutes * 60}`)}
+                  onClick={() => navigate(`/stopwatch?initial=${minutes * 60}${soundUrl ? `&sound=${encodeURIComponent(soundUrl)}` : ''}`)}
                   className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700"
                 >
                   Preset

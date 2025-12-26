@@ -95,3 +95,19 @@ exports.deleteAlarm = async (req, res, next) => {
     return next(error);
   }
 };
+
+// POST /api/alarms/:id/trigger
+exports.triggerAlarm = async (req, res, next) => {
+  try {
+    const alarm = await Alarm.findById(req.params.id);
+
+    if (!alarm) {
+      return res.status(404).json({ success: false, message: 'Alarm not found' });
+    }
+
+    // Optionally: update lastTriggered timestamp or analytics here
+    return res.json({ success: true, data: alarm });
+  } catch (error) {
+    return next(error);
+  }
+};

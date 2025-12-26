@@ -15,16 +15,25 @@ export default function StopwatchPage() {
   };
 
   const handleTrigger = async (preset) => {
-    const res = await triggerAlarm(preset._id || preset.id);
-    const settings = res && (res.data || res);
+    try {
+      let settings = preset;
+      if (preset && (preset._id || preset.id)) {
+        const res = await triggerAlarm(preset._id || preset.id);
+        settings = res && (res.data || res) ? (res.data || res) : preset;
+      }
 
-    const controller = playAlarmSmoothly({
-      sound: preset.sound || 'chime',
-      rampDuration: preset.rampDuration || 30,
-      maxVolume: preset.maxVolume || 1.0,
-    });
+      const controller = playAlarmSmoothly({
+        sound: settings.sound || preset.sound || 'chime',
+        rampDuration: settings.rampDuration || preset.rampDuration || 30,
+        maxVolume: settings.maxVolume || preset.maxVolume || 1.0,
+      });
 
-    setActiveSoundController(controller);
+      setActiveSoundController(controller);
+    } catch (err) {
+      console.error('Failed to trigger preset', err);
+      // notify user
+      alert(err?.response?.data?.message || err?.message || 'Failed to trigger preset');
+    }
   };
 
   const stopSound = () => {
@@ -40,6 +49,10 @@ export default function StopwatchPage() {
   const initialFromQuery = params.get('initial') ? parseInt(params.get('initial'), 10) : null;
   const initialFromState = location.state && location.state.initial ? Number(location.state.initial) : null;
   const initialSeconds = initialFromState || initialFromQuery || 60 * 15;
+  // sound may be passed via state.sound or ?sound= URL param
+  const soundFromQuery = params.get('sound') || null;
+  const soundFromState = location.state && location.state.sound ? location.state.sound : null;
+  const finishSound = soundFromState || soundFromQuery || 'bell';
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center py-10 px-4">
@@ -57,6 +70,7 @@ export default function StopwatchPage() {
         <div className="flex justify-center">
           <StopwatchDisplay
             initial={initialSeconds}
+            finishSound={finishSound}
             onFinish={() => {
               /* trigger default sound */
             }}

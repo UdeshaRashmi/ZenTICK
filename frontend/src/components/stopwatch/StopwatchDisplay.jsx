@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { formatTime } from '../../utils/formatTime';
 import Button from '../common/Button';
+import { playSoundOnce } from '../../utils/sounds';
 
-export default function StopwatchDisplay({ initial = 0, onFinish }) {
+export default function StopwatchDisplay({ initial = 0, onFinish, finishSound }) {
   const [seconds, setSeconds] = useState(initial);
   const [running, setRunning] = useState(false);
   const rafRef = useRef(null);
@@ -27,6 +28,12 @@ export default function StopwatchDisplay({ initial = 0, onFinish }) {
   useEffect(() => {
     if (seconds <= 0 && running) {
       setRunning(false);
+      // play a short ring once when timer finishes
+      try {
+        playSoundOnce({ sound: finishSound || 'bell', volume: 1.0 });
+      } catch (e) {
+        // ignore play errors
+      }
       onFinish && onFinish();
     }
   }, [seconds, running, onFinish]);

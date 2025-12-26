@@ -8,10 +8,28 @@ export default function AlarmPresetList({ presets = [], onTrigger, onDelete }) {
     <ul>
       {list.map((p) => (
         <li key={p._id || p.name} style={{ marginBottom: 8 }}>
-          <strong>{p.name || p.label}</strong> — {p.durationInMinutes || Math.round((p.duration||0)/60)} min
-          <div>
-            <Button onClick={() => onTrigger && onTrigger(p)}>Trigger</Button>
-            <Button onClick={() => onDelete && onDelete(p._id)} style={{ marginLeft: 8 }}>Delete</Button>
+          <div className="flex items-center justify-between">
+            <div>
+              <strong>{p.name || p.label}</strong>
+              <div className="text-sm text-gray-500">{(p.durationInMinutes || Math.round((p.duration||0)/60)) + ' min'}</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => onTrigger && onTrigger(p)}
+                disabled={!onTrigger}
+              >
+                Trigger
+              </Button>
+              <Button
+                type="button"
+                variant="danger"
+                onClick={() => onDelete && onDelete(p._id)}
+              >
+                Delete
+              </Button>
+            </div>
           </div>
         </li>
       ))}
