@@ -12,11 +12,24 @@ export default function Layout() {
       <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-purple-100 relative z-10">
         <div className="max-w-5xl mx-auto px-6 py-8 flex justify-between items-center">
           <h1 className="text-4xl font-light text-gray-800 tracking-wide">
-            ZenTick <span className="text-purple-500">🧘‍♂️</span>
+            <NavLink to="/" className="flex items-center gap-2 hover:text-purple-600">
+              <span>ZenTick</span>
+              <span className="text-purple-500">🧘‍♂️</span>
+            </NavLink>
           </h1>
           <nav className="flex gap-10">
             <NavLink
               to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-purple-600 font-medium text-lg border-b-2 border-purple-600 pb-1"
+                  : "text-gray-600 hover:text-purple-600 text-lg transition"
+              }
+            >
+              Home
+            </NavLink>
+            <NavLink
+              to="/todos"
               className={({ isActive }) =>
                 isActive
                   ? "text-purple-600 font-medium text-lg border-b-2 border-purple-600 pb-1"

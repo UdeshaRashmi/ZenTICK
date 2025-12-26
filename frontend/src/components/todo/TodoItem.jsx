@@ -33,20 +33,20 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
   };
 
   return (
-    <div className="flex items-center justify-between px-3 py-2 border-b last:border-b-0">
-      <div className="flex items-center gap-3 flex-1">
+    <div className="group bg-white/60 hover:bg-white/80 rounded-xl p-3 shadow-sm flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3 flex-1 min-w-0">
         <input
           type="checkbox"
           checked={!!todo.completed}
           onChange={() => onToggle && onToggle(todo)}
-          className="w-4 h-4"
+          className="w-5 h-5 text-emerald-600 rounded"
         />
 
         {!editing ? (
-          <span className="ml-1 flex-1">{todo.title}</span>
+          <span className={`ml-2 truncate ${todo.completed ? 'line-through text-gray-400' : 'text-gray-800'}`}>{todo.title}</span>
         ) : (
           <div className="flex-1">
-            <Input value={title} onChange={setTitle} />
+            <Input value={title} onChange={setTitle} className="bg-white" />
           </div>
         )}
       </div>
@@ -54,13 +54,13 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
       <div className="flex items-center gap-2">
         {!editing ? (
           <>
-            <Button onClick={startEdit} className="bg-emerald-500 hover:bg-emerald-400">Edit</Button>
-            <Button onClick={() => onDelete && onDelete(id)} className="bg-red-600 hover:bg-red-500">Delete</Button>
+            <Button onClick={startEdit} variant="neutral" className="text-sm">Edit</Button>
+            <Button onClick={() => onDelete && onDelete(id)} variant="danger" className="text-sm">Delete</Button>
           </>
         ) : (
           <>
-            <Button onClick={saveEdit} disabled={saving}>{saving ? 'Saving...' : 'Save'}</Button>
-            <Button onClick={cancelEdit} className="bg-gray-300 text-black">Cancel</Button>
+            <Button onClick={saveEdit} disabled={saving} variant="primary" className="text-sm">{saving ? 'Saving...' : 'Save'}</Button>
+            <Button onClick={cancelEdit} variant="ghost" className="text-sm">Cancel</Button>
           </>
         )}
       </div>
